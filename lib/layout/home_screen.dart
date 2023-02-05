@@ -260,7 +260,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 });
                },
                child: Container(
-                 width: 300,
+                 width: 400,
                  height: 70,
                  decoration: BoxDecoration(
                    color: primaryColor,
@@ -289,7 +289,7 @@ class _HomeScreenState extends State<HomeScreen> {
              ),
              const SizedBox(height: 10,),
              Container(
-               width: 300,
+               width: 400,
                height: 70,
                decoration: BoxDecoration(
                    color: primaryColor,
