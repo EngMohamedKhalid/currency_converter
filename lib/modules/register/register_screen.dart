@@ -1,14 +1,23 @@
 // ignore_for_file: use_full_hex_values_for_flutter_colors
 
+import 'dart:convert';
+
+import 'package:currency_converter/layout/home_screen.dart';
+import 'package:currency_converter/models/register_model.dart';
+import 'package:currency_converter/modules/login/login_screen.dart';
 import 'package:currency_converter/shared/components/custom_button.dart';
 import 'package:currency_converter/shared/components/custom_statefull_text_field.dart';
 import 'package:currency_converter/shared/components/custom_stateless_text_field.dart';
 import 'package:currency_converter/shared/custom_text_button.dart';
+import 'package:currency_converter/shared/network/remote/dio_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class RegisterScreen extends StatelessWidget {
-  const RegisterScreen({Key? key}) : super(key: key);
-
+   RegisterScreen({Key? key}) : super(key: key);
+final TextEditingController nameCont = TextEditingController();
+final TextEditingController emailCont = TextEditingController();
+final TextEditingController passwordCont = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,17 +77,41 @@ class RegisterScreen extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 35,),
-                const CustomStatelessTextField(lableText: "Full Name"),
+                 CustomStatelessTextField(
+                  controller: nameCont,
+                    lableText: "Full Name"),
                 const SizedBox(height: 20,),
-                const CustomStatelessTextField(lableText: "Phone Number"),
+                // const CustomStatelessTextField(lableText: "Phone Number"),
+                // const SizedBox(height: 20,),
+                 CustomStatelessTextField(
+                  controller:emailCont ,
+                    lableText: "Email"),
                 const SizedBox(height: 20,),
-                const CustomStatelessTextField(lableText: "Email"),
-                const SizedBox(height: 20,),
-                const CustomStateFullTextField(text: "Password"),
-                const SizedBox(height: 20,),
-                const CustomStateFullTextField(text: "Confirm Password"),
+                 CustomStateFullTextField(
+                  controller:passwordCont ,
+                    text: "Password"),
+                // const SizedBox(height: 20,),
+                // const CustomStateFullTextField(text: "Confirm Password"),
                 const SizedBox(height: 50,),
-                CustomButton(onPressed: (){}, text: "Create Account", minWidth: 411),
+                CustomButton(onPressed: (){
+                  signUp().then((value) {
+                    Navigator.pushAndRemoveUntil(
+                              context, MaterialPageRoute(builder: (context) => const HomeScreen(),),
+                                  (route) => false);
+                  });
+                  // DioHelper.auth(
+                  //   url: "authaccount/registration",
+                  //   data:{
+                  //     "name":nameCont.text,
+                  //     "email":emailCont.text,
+                  //     "password":passwordCont.text
+                  //   },
+                  // ).then((value){
+                  //   Navigator.pushAndRemoveUntil(
+                  //       context, MaterialPageRoute(builder: (context) => const HomeScreen(),),
+                  //           (route) => false);
+                  // });
+                }, text: "Create Account", minWidth: 411),
                 const SizedBox(height: 20,),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -92,7 +125,11 @@ class RegisterScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 2),
-                    CustomTextButton(onPressed: (){}, text: "Login")
+                    CustomTextButton(onPressed: (){
+                      Navigator.pushAndRemoveUntil(
+                          context, MaterialPageRoute(builder: (context) =>  LoginScreen(),),
+                              (route) => false);
+                    }, text: "Login")
                   ],
                 ),
               ],
@@ -100,6 +137,16 @@ class RegisterScreen extends StatelessWidget {
           ),
         ),
       ) ,
+    );
+  }
+    Future<void> signUp()async{
+    http.post(
+        Uri.parse("http://restapi.adequateshop.com/api/authaccount/registration"),
+        body: {
+          "name":nameCont.text,
+          "email":emailCont.text,
+          "password":passwordCont.text
+      }
     );
   }
 }
