@@ -1,4 +1,5 @@
 import 'package:currency_converter/layout/home_screen.dart';
+import 'package:currency_converter/modules/login/login_cubit/cubit.dart';
 import 'package:currency_converter/modules/register/register_screen.dart';
 import 'package:currency_converter/shared/components/custom_button.dart';
 import 'package:currency_converter/shared/components/custom_statefull_text_field.dart';
@@ -6,14 +7,17 @@ import 'package:currency_converter/shared/components/custom_stateless_text_field
 import 'package:currency_converter/shared/custom_text_button.dart';
 import 'package:currency_converter/shared/network/remote/dio_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 
 class LoginScreen extends StatelessWidget {
-   LoginScreen({Key? key}) : super(key: key);
-  final TextEditingController emailCont = TextEditingController();
-  final TextEditingController passwordCont = TextEditingController();
+const   LoginScreen({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    return BlocConsumer<LoginCubit, LoginStates>(
+  listener: (context, state) {},
+  builder: (context, state) {
+    var cubit = LoginCubit.getObject(context);
     return Scaffold(
      backgroundColor: Colors.black,
       body: Center(
@@ -42,29 +46,20 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 100,),
-                 CustomStatelessTextField(controller: emailCont,lableText: "Email",),
+                 CustomStatelessTextField(controller: cubit.emailCont,lableText: "Email",),
                 const SizedBox(height: 25,),
-                 CustomStateFullTextField(controller: passwordCont,text: "Password"),
+                 CustomStateFullTextField(controller: cubit.passwordCont,text: "Password"),
                 const SizedBox(height: 60,),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    //authaccount/login
+                    state is LoginLoading?
+                    const Center(child: CircularProgressIndicator(backgroundColor: Colors.deepOrange,),)
+                        :
                     CustomButton(
                       minWidth: 320,
                         onPressed: (){
-                        // DioHelper.auth(
-                        //     url: "authaccount/login",
-                        //     data: {
-                        //       "email":emailCont.text,
-                        //       "password":passwordCont.text
-                        //     },
-                        // )
-                            logIn().then((value) {
-                          Navigator.pushAndRemoveUntil(
-                              context, MaterialPageRoute(builder: (context) => const HomeScreen(),),
-                                  (route) => false);
-                        });
+                            cubit.logIn(context);
                         },
                         text: "Login",
                     ),
@@ -115,14 +110,8 @@ class LoginScreen extends StatelessWidget {
         ),
       ),
     );
+  },
+);
   }
-   Future<void> logIn()async{
-     http.post(
-         Uri.parse("http://restapi.adequateshop.com/api/authaccount/login"),
-         body: {
-           "email":emailCont.text,
-           "password":passwordCont.text
-         }
-     );
-   }
+   
 }
